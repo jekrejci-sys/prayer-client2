@@ -32,7 +32,7 @@
       --blue:#2563eb;
       --sw:196px; /* sidebar width */
     }
-
+ 
     /* ── RESET ─────────────────────────────────────────────────────── */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth;font-size:16px}
@@ -43,13 +43,13 @@
       min-height:100vh;
       overflow-x:hidden;
     }
-
+ 
     /* ── STAR BG (repurposed as subtle sidebar bg helper) ──────────── */
     .star-bg{display:none} /* hidden — not needed in this design */
-
+ 
     /* ── STRIPES (repurposed as top stripe on sidebar brand) ────────── */
     .stripes-top{display:none}
-
+ 
     /* ── SIDEBAR NAV ───────────────────────────────────────────────── */
     nav{
       position:fixed;
@@ -66,7 +66,7 @@
       backdrop-filter:none;
       border-bottom:none;
     }
-
+ 
     /* Brand */
     .nav-inner{
       display:flex;
@@ -89,7 +89,7 @@
     .nav-brand .brand-america{color:#3b82f6}
     .nav-brand .brand-prays  {color:#ef4444}
     .nav-brand .brand-star   {color:var(--gold-lt);font-size:.55em;vertical-align:super}
-
+ 
     /* Nav links list */
     .nav-links{
       list-style:none;
@@ -124,7 +124,7 @@
       color:var(--parchment);
     }
     .nav-links a.active::after{display:none} /* remove original underline indicator */
-
+ 
     /* Hamburger — hidden on desktop, shown mobile */
     .hamburger{
       display:none;
@@ -143,7 +143,7 @@
       border-radius:2px;
       transition:all .3s;
     }
-
+ 
     /* Mobile menu */
     .mobile-menu{
       display:none;
@@ -164,19 +164,19 @@
     }
     .mobile-menu a:last-child{border-bottom:none}
     .mobile-menu a:hover{color:var(--parchment);background:rgba(255,255,255,.04)}
-
+ 
     /* ── MAIN CONTENT AREA (offset by sidebar) ─────────────────────── */
     #app{
       margin-left:var(--sw);
       position:relative;
       z-index:1;
     }
-
+ 
     /* ── PAGES ─────────────────────────────────────────────────────── */
     .page{display:none;animation:fadeUp .3s ease forwards}
     .page.active{display:block;min-height:calc(100vh - 56px)}
     @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
+ 
     /* ── TOP BAR (replaces old nav top bar) ────────────────────────── */
     /* The greeting bar and login buttons sit above app in the HTML,
        so we style those to look like Pray.com's top bar */
@@ -203,20 +203,44 @@
       letter-spacing:0;
     }
     .greeting-text span{color:var(--parchment)}
-
+ 
     /* ── HERO ──────────────────────────────────────────────────────── */
     .hero{
       min-height:auto;
       display:flex;
       flex-direction:column;
       align-items:flex-start;
-      justify-content:flex-start;
+      justify-content:flex-end;
       text-align:left;
-      padding:2rem 2rem 0;
+      padding:3rem 2.5rem 2.5rem;
+      position:relative;
+      overflow:hidden;
+      border-radius:12px;
+      margin:1rem 1.5rem 0;
+      min-height:380px;
+      background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1400&q=80&fit=crop');
+      background-size:cover;
+      background-position:center 40%;
     }
-    .hero::before{display:none}
+    /* dark gradient overlay so text stays readable */
+    .hero::before{
+      content:'';
+      display:block;
+      position:absolute;
+      inset:0;
+      background:linear-gradient(
+        to bottom,
+        rgba(0,0,0,.10) 0%,
+        rgba(0,0,0,.35) 45%,
+        rgba(0,0,0,.78) 100%
+      );
+      border-radius:inherit;
+      pointer-events:none;
+    }
+    /* make all direct hero children sit above the overlay */
+    .hero > *{position:relative;z-index:1}
     .torch-glow{display:none}
-
+ 
     .hero-eyebrow{
       font-family:'Inter',system-ui,sans-serif;
       font-size:.7rem;
@@ -228,7 +252,7 @@
       display:block;
     }
     .hero-eyebrow::before,.hero-eyebrow::after{display:none}
-
+ 
     .hero-title{
       font-family:'Inter',system-ui,sans-serif;
       font-size:clamp(2.2rem,5vw,3.6rem);
@@ -244,7 +268,7 @@
       color:#ef4444;
       display:inline;
     }
-
+ 
     .hero-subtitle{
       font-family:'Inter',system-ui,sans-serif;
       font-size:.95rem;
@@ -256,9 +280,9 @@
       max-width:520px;
       line-height:1.65;
     }
-
+ 
     .hero-divider{display:none}
-
+ 
     .hero-verse{
       font-size:.9rem;
       font-style:italic;
@@ -275,7 +299,7 @@
       color:var(--gold-lt);
       text-transform:uppercase;
     }
-
+ 
     .hero-cta-wrap{
       margin-top:1.2rem;
       display:flex;
@@ -283,9 +307,9 @@
       flex-wrap:wrap;
       justify-content:flex-start;
     }
-
+ 
     .scroll-hint{display:none}
-
+ 
     /* ── FILTER ROW (pill tags — Pray.com style) ───────────────────── */
     /* We'll re-use section-label as the filter row header */
     .section-label{
@@ -299,11 +323,11 @@
       display:block;
     }
     .section-label::after{display:none}
-
+ 
     /* ── SHARED SECTION ────────────────────────────────────────────── */
     section{padding:2.5rem 2rem}
     .container{max-width:1100px;margin:0 auto}
-
+ 
     .section-title{
       font-family:'Inter',system-ui,sans-serif;
       font-size:clamp(1.4rem,3vw,2rem);
@@ -314,7 +338,7 @@
       margin-bottom:.6rem;
     }
     .section-title span{color:var(--gold-lt)}
-
+ 
     .section-body{
       font-family:'Inter',system-ui,sans-serif;
       font-size:.9rem;
@@ -322,7 +346,7 @@
       color:var(--muted-l);
       max-width:600px;
     }
-
+ 
     /* ── COUNTER (stats bar) ───────────────────────────────────────── */
     .counter-section{
       background:var(--navy-lt);
@@ -365,7 +389,7 @@
       padding-bottom:0;
       font-family:'Inter',system-ui,sans-serif;
     }
-
+ 
     /* ── BUTTONS ───────────────────────────────────────────────────── */
     .btn{
       display:inline-flex;
@@ -403,7 +427,7 @@
       transform:translateY(-1px);
       border-color:var(--parchment);
     }
-
+ 
     /* ── PRAYER CARDS ──────────────────────────────────────────────── */
     .prayer-grid{
       display:grid;
@@ -476,7 +500,7 @@
       font-style:italic;
       color:var(--gold-lt);
     }
-
+ 
     /* ── DAILY PRAYER ──────────────────────────────────────────────── */
     .day-selector{margin-top:1.5rem}
     .day-tabs{
@@ -500,7 +524,7 @@
     }
     .day-tab:hover{border-color:var(--border-b);color:var(--parchment)}
     .day-tab.selected{background:var(--blue);border-color:var(--blue);color:#fff}
-
+ 
     .prayer-content{
       background:var(--navy-lt);
       border:1px solid var(--border);
@@ -558,7 +582,7 @@
       margin-top:.3rem;
       flex-shrink:0;
     }
-
+ 
     /* ── ABOUT ─────────────────────────────────────────────────────── */
     .about-hero{
       background:none;
@@ -653,7 +677,7 @@
       background:var(--border);
       margin:.9rem 0;
     }
-
+ 
     /* ── CTA BANNER ────────────────────────────────────────────────── */
     .cta-banner{
       background:rgba(37,99,235,.12);
@@ -682,7 +706,7 @@
       line-height:1.65;
       position:relative;
     }
-
+ 
     /* ── QUOTE ─────────────────────────────────────────────────────── */
     .quote-section{
       padding:2rem 2rem;
@@ -723,14 +747,14 @@
       color:var(--gold-lt);
       font-style:normal;
     }
-
+ 
     /* ── STRIPE ACCENT ─────────────────────────────────────────────── */
     .stripe-accent{
       height:1px;
       background:var(--border);
       opacity:1;
     }
-
+ 
     /* ── PROCLAMATION ──────────────────────────────────────────────── */
     .proclamation{
       max-width:700px;
@@ -758,7 +782,7 @@
       text-align:justify;
       margin-bottom:.75rem;
     }
-
+ 
     /* ── SHARE MODAL ───────────────────────────────────────────────── */
     .share-overlay{
       display:none;
@@ -773,7 +797,7 @@
     }
     .share-overlay.open{display:flex;animation:fadeIn .2s ease forwards}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-
+ 
     .share-modal{
       background:#161616;
       border:1px solid rgba(255,255,255,.14);
@@ -785,7 +809,7 @@
       animation:slideUp .25s ease forwards;
     }
     @keyframes slideUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
-
+ 
     .share-close{
       position:absolute;top:.9rem;right:.9rem;
       background:rgba(255,255,255,.07);
@@ -799,7 +823,7 @@
       transition:all .15s;line-height:1;
     }
     .share-close:hover{background:rgba(255,255,255,.14);color:var(--parchment)}
-
+ 
     .share-modal h3{
       font-family:'Inter',system-ui,sans-serif;
       font-size:1.3rem;
@@ -841,7 +865,7 @@
       border:1px solid var(--border);
       grid-column:1/-1;
     }
-
+ 
     .share-url-box{
       display:flex;gap:.45rem;
       background:rgba(255,255,255,.04);
@@ -865,7 +889,7 @@
       white-space:nowrap;
     }
     .share-url-box button:hover{background:rgba(217,119,6,.1)}
-
+ 
     /* ── TOAST ─────────────────────────────────────────────────────── */
     .toast{
       position:fixed;bottom:5rem;left:50%;
@@ -879,7 +903,7 @@
       letter-spacing:.04em;text-transform:uppercase;
     }
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
+ 
     /* ── FAB ────────────────────────────────────────────────────────── */
     .fab-share{
       position:fixed;bottom:5.5rem;right:2rem;z-index:98;
@@ -895,7 +919,7 @@
       transition:all .2s;
     }
     .fab-share:hover{background:var(--gold-lt);transform:translateY(-2px)}
-
+ 
     /* ── SPONSOR FOOTER ────────────────────────────────────────────── */
     .sponsor-footer{
       background:#ffffff;
@@ -924,7 +948,7 @@
     .sponsor-footer-logo a{display:block;transition:opacity .2s,transform .2s}
     .sponsor-footer-logo a:hover{opacity:.75;transform:scale(1.03)}
     .sponsor-logo{height:38px;width:auto;display:block}
-
+ 
     /* ── SUBSCRIBE BANNER (bottom of page) ─────────────────────────── */
     /* This class is used in the new redesigned HTML — keep it here for
        forward-compatibility even if the original HTML doesn't have it */
@@ -951,7 +975,7 @@
       transition:all .15s;white-space:nowrap;text-transform:uppercase;
     }
     .btn-subscribe:hover{background:var(--gold-lt)}
-
+ 
     /* ── I PRAYED BUTTON ───────────────────────────────────────────── */
     .prayed-section{
       margin-top:1.5rem;
@@ -1012,7 +1036,7 @@
       100%{transform:scale(1)}
     }
     .prayed-pop{animation:prayedPop .35s ease forwards}
-
+ 
     /* ── LOGIN MODAL ───────────────────────────────────────────────── */
     .login-overlay{
       position:fixed;inset:0;z-index:1000;
@@ -1023,7 +1047,7 @@
     }
     .login-overlay.hidden{display:none}
     @keyframes loginFadeIn{from{opacity:0}to{opacity:1}}
-
+ 
     .login-modal{
       background:#111;
       border:1px solid rgba(255,255,255,.13);
@@ -1113,7 +1137,7 @@
       text-align:center;line-height:1.5;margin-top:.75rem;
     }
     .login-legal a{color:rgba(255,255,255,.32)}
-
+ 
     /* ── LOGIN SELECTS ─────────────────────────────────────────────── */
     .login-field select{
       background:rgba(255,255,255,.06);
@@ -1138,10 +1162,10 @@
     .login-field select.error{border-color:#ef4444}
     .login-field select option{background:#111;color:var(--parchment)}
     .login-field select option:disabled{color:rgba(255,255,255,.3)}
-
+ 
     /* ── GREETING BAR ──────────────────────────────────────────────── */
     /* (already styled above as top bar — this handles the .visible toggle) */
-
+ 
     /* ── RESPONSIVE ────────────────────────────────────────────────── */
     @media(max-width:900px){
       .about-grid{grid-template-columns:1fr}
