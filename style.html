@@ -1,0 +1,1165 @@
+  <style>
+    /* ── DESIGN TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --navy:#0a0a0a;        /* body bg  */
+      --navy-mid:#111111;    /* sidebar  */
+      --navy-lt:#1a1a1a;     /* cards    */
+      --crimson:#d97706;     /* gold accent (replaces crimson for primary actions) */
+      --crimson-lt:#f59e0b;  /* gold hover */
+      --gold:#d97706;        /* gold     */
+      --gold-lt:#f59e0b;     /* gold lt  */
+      --parchment:#ffffff;   /* main text */
+      --white:#ffffff;
+      --muted:#888888;
+      --muted-l:#aaaaaa;
+      --border:rgba(255,255,255,.08);
+      --border-b:rgba(255,255,255,.15);
+      --blue:#2563eb;
+      --sw:196px; /* sidebar width */
+    }
+
+    /* ── RESET ─────────────────────────────────────────────────────── */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;font-size:16px}
+    body{
+      font-family:'Inter',system-ui,-apple-system,sans-serif;
+      background:var(--navy);
+      color:var(--parchment);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    /* ── STAR BG (repurposed as subtle sidebar bg helper) ──────────── */
+    .star-bg{display:none} /* hidden — not needed in this design */
+
+    /* ── STRIPES (repurposed as top stripe on sidebar brand) ────────── */
+    .stripes-top{display:none}
+
+    /* ── SIDEBAR NAV ───────────────────────────────────────────────── */
+    nav{
+      position:fixed;
+      left:0;top:0;bottom:0;
+      width:var(--sw);
+      background:var(--navy-mid);
+      border-right:1px solid var(--border);
+      display:flex;
+      flex-direction:column;
+      z-index:100;
+      overflow-y:auto;
+      /* override sticky/top from original */
+      padding:0;
+      backdrop-filter:none;
+      border-bottom:none;
+    }
+
+    /* Brand */
+    .nav-inner{
+      display:flex;
+      flex-direction:column;
+      height:100%;
+    }
+    .nav-brand{
+      display:block;
+      padding:1.3rem 1.2rem .8rem;
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:1.1rem;
+      font-weight:900;
+      letter-spacing:-.02em;
+      color:var(--parchment);
+      text-decoration:none;
+      text-transform:none;
+      flex-shrink:0;
+    }
+    /* color the two words */
+    .nav-brand .brand-america{color:#3b82f6}
+    .nav-brand .brand-prays  {color:#ef4444}
+    .nav-brand .brand-star   {color:var(--gold-lt);font-size:.55em;vertical-align:super}
+
+    /* Nav links list */
+    .nav-links{
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:.1rem;
+      padding:.2rem .6rem;
+      flex:1;
+    }
+    .nav-links li{list-style:none}
+    .nav-links a{
+      display:flex;
+      align-items:center;
+      gap:.75rem;
+      padding:.6rem .85rem;
+      border-radius:8px;
+      color:var(--muted-l);
+      text-decoration:none;
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.88rem;
+      font-weight:500;
+      letter-spacing:0;
+      text-transform:none;
+      transition:all .15s;
+    }
+    .nav-links a:hover{
+      background:rgba(255,255,255,.06);
+      color:var(--parchment);
+    }
+    .nav-links a.active{
+      background:rgba(255,255,255,.1);
+      color:var(--parchment);
+    }
+    .nav-links a.active::after{display:none} /* remove original underline indicator */
+
+    /* Hamburger — hidden on desktop, shown mobile */
+    .hamburger{
+      display:none;
+      flex-direction:column;
+      gap:5px;
+      cursor:pointer;
+      padding:6px;
+      background:none;
+      border:none;
+    }
+    .hamburger span{
+      display:block;
+      width:22px;
+      height:2px;
+      background:var(--parchment);
+      border-radius:2px;
+      transition:all .3s;
+    }
+
+    /* Mobile menu */
+    .mobile-menu{
+      display:none;
+      flex-direction:column;
+      background:var(--navy-mid);
+      border-bottom:1px solid var(--border);
+    }
+    .mobile-menu.open{display:flex}
+    .mobile-menu a{
+      padding:.72rem 1.5rem;
+      color:var(--muted-l);
+      text-decoration:none;
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.88rem;
+      font-weight:500;
+      border-bottom:1px solid var(--border);
+      transition:all .15s;
+    }
+    .mobile-menu a:last-child{border-bottom:none}
+    .mobile-menu a:hover{color:var(--parchment);background:rgba(255,255,255,.04)}
+
+    /* ── MAIN CONTENT AREA (offset by sidebar) ─────────────────────── */
+    #app{
+      margin-left:var(--sw);
+      position:relative;
+      z-index:1;
+    }
+
+    /* ── PAGES ─────────────────────────────────────────────────────── */
+    .page{display:none;animation:fadeUp .3s ease forwards}
+    .page.active{display:block;min-height:calc(100vh - 56px)}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── TOP BAR (replaces old nav top bar) ────────────────────────── */
+    /* The greeting bar and login buttons sit above app in the HTML,
+       so we style those to look like Pray.com's top bar */
+    .greeting-bar{
+      position:sticky;
+      top:0;
+      z-index:90;
+      background:rgba(10,10,10,.92);
+      backdrop-filter:blur(14px);
+      border-bottom:1px solid var(--border);
+      padding:0 1.5rem;
+      height:56px;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      margin-left:0; /* full width above app */
+    }
+    .greeting-bar.visible{display:flex}
+    .greeting-text{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.78rem;
+      font-weight:600;
+      color:var(--gold-lt);
+      letter-spacing:0;
+    }
+    .greeting-text span{color:var(--parchment)}
+
+    /* ── HERO ──────────────────────────────────────────────────────── */
+    .hero{
+      min-height:auto;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      justify-content:flex-start;
+      text-align:left;
+      padding:2rem 2rem 0;
+    }
+    .hero::before{display:none}
+    .torch-glow{display:none}
+
+    .hero-eyebrow{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.7rem;
+      font-weight:700;
+      letter-spacing:.18em;
+      color:#ef4444;
+      text-transform:uppercase;
+      margin-bottom:.4rem;
+      display:block;
+    }
+    .hero-eyebrow::before,.hero-eyebrow::after{display:none}
+
+    .hero-title{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:clamp(2.2rem,5vw,3.6rem);
+      font-weight:900;
+      letter-spacing:-.04em;
+      line-height:1.05;
+      color:var(--parchment);
+      margin-bottom:.5rem;
+      text-shadow:none;
+    }
+    .hero-title em{
+      font-style:normal;
+      color:#ef4444;
+      display:inline;
+    }
+
+    .hero-subtitle{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.95rem;
+      font-weight:400;
+      letter-spacing:0;
+      color:var(--muted-l);
+      text-transform:none;
+      margin-bottom:1rem;
+      max-width:520px;
+      line-height:1.65;
+    }
+
+    .hero-divider{display:none}
+
+    .hero-verse{
+      font-size:.9rem;
+      font-style:italic;
+      color:var(--muted-l);
+      max-width:520px;
+      line-height:1.65;
+      margin-bottom:.25rem;
+    }
+    .hero-verse-ref{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.7rem;
+      font-weight:700;
+      letter-spacing:.08em;
+      color:var(--gold-lt);
+      text-transform:uppercase;
+    }
+
+    .hero-cta-wrap{
+      margin-top:1.2rem;
+      display:flex;
+      gap:.5rem;
+      flex-wrap:wrap;
+      justify-content:flex-start;
+    }
+
+    .scroll-hint{display:none}
+
+    /* ── FILTER ROW (pill tags — Pray.com style) ───────────────────── */
+    /* We'll re-use section-label as the filter row header */
+    .section-label{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.68rem;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:#ef4444;
+      margin-bottom:.5rem;
+      display:block;
+    }
+    .section-label::after{display:none}
+
+    /* ── SHARED SECTION ────────────────────────────────────────────── */
+    section{padding:2.5rem 2rem}
+    .container{max-width:1100px;margin:0 auto}
+
+    .section-title{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:clamp(1.4rem,3vw,2rem);
+      font-weight:800;
+      letter-spacing:-.03em;
+      color:var(--parchment);
+      line-height:1.1;
+      margin-bottom:.6rem;
+    }
+    .section-title span{color:var(--gold-lt)}
+
+    .section-body{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.9rem;
+      line-height:1.7;
+      color:var(--muted-l);
+      max-width:600px;
+    }
+
+    /* ── COUNTER (stats bar) ───────────────────────────────────────── */
+    .counter-section{
+      background:var(--navy-lt);
+      border-top:1px solid var(--border);
+      border-bottom:1px solid var(--border);
+      padding:1.2rem 2rem;
+    }
+    .counter-grid{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:.5rem;
+      flex-wrap:wrap;
+      max-width:900px;
+      margin:0 auto;
+    }
+    .counter-item{text-align:center;padding:.2rem 1.2rem}
+    .counter-num{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:clamp(1.8rem,4vw,2.8rem);
+      font-weight:900;
+      letter-spacing:-.04em;
+      color:var(--parchment);
+      line-height:1;
+      text-shadow:none;
+    }
+    .counter-label{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.62rem;
+      font-weight:500;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-top:.15rem;
+    }
+    .counter-sep{
+      font-size:1.4rem;
+      color:rgba(255,255,255,.12);
+      line-height:1;
+      padding-bottom:0;
+      font-family:'Inter',system-ui,sans-serif;
+    }
+
+    /* ── BUTTONS ───────────────────────────────────────────────────── */
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:.45rem;
+      padding:.6rem 1.4rem;
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.78rem;
+      font-weight:700;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      text-decoration:none;
+      border-radius:5px;
+      cursor:pointer;
+      transition:all .15s;
+      border:none;
+    }
+    .btn-primary{
+      background:var(--gold);
+      color:#000;
+      box-shadow:none;
+    }
+    .btn-primary:hover{
+      background:var(--gold-lt);
+      transform:translateY(-1px);
+      box-shadow:none;
+    }
+    .btn-outline{
+      background:transparent;
+      color:var(--parchment);
+      border:1.5px solid var(--border-b);
+    }
+    .btn-outline:hover{
+      background:rgba(255,255,255,.06);
+      transform:translateY(-1px);
+      border-color:var(--parchment);
+    }
+
+    /* ── PRAYER CARDS ──────────────────────────────────────────────── */
+    .prayer-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+      gap:.85rem;
+      margin-top:1.2rem;
+    }
+    .prayer-card{
+      background:var(--navy-lt);
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:1.4rem;
+      position:relative;
+      overflow:hidden;
+      transition:border-color .15s,transform .2s,background .15s;
+      contain:layout style;
+    }
+    .prayer-card:hover{
+      border-color:var(--border-b);
+      transform:translateY(-2px);
+      background:#222;
+      box-shadow:none;
+    }
+    .prayer-card::before{display:none} /* remove left color bar */
+    /* add a top color line instead */
+    .prayer-card::after{
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;
+      height:3px;
+      background:linear-gradient(90deg,var(--blue),var(--gold));
+      border-radius:10px 10px 0 0;
+    }
+    .card-week{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.62rem;
+      font-weight:700;
+      letter-spacing:.15em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:.35rem;
+    }
+    .card-days{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:1.6rem;
+      font-weight:900;
+      letter-spacing:-.03em;
+      color:var(--parchment);
+      line-height:1;
+      margin-bottom:.45rem;
+    }
+    .card-theme{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.95rem;
+      font-weight:700;
+      color:var(--parchment);
+      margin-bottom:.4rem;
+      line-height:1.3;
+    }
+    .card-focus{
+      font-size:.82rem;
+      color:var(--muted-l);
+      line-height:1.55;
+    }
+    .card-verse{
+      margin-top:.85rem;
+      padding-top:.85rem;
+      border-top:1px solid var(--border);
+      font-size:.78rem;
+      font-style:italic;
+      color:var(--gold-lt);
+    }
+
+    /* ── DAILY PRAYER ──────────────────────────────────────────────── */
+    .day-selector{margin-top:1.5rem}
+    .day-tabs{
+      display:flex;
+      flex-wrap:wrap;
+      gap:.35rem;
+      margin-bottom:1.4rem;
+    }
+    .day-tab{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.73rem;
+      font-weight:600;
+      padding:.3rem .65rem;
+      border:1px solid var(--border);
+      border-radius:999px;
+      color:var(--muted);
+      cursor:pointer;
+      background:none;
+      transition:all .15s;
+      letter-spacing:0;
+    }
+    .day-tab:hover{border-color:var(--border-b);color:var(--parchment)}
+    .day-tab.selected{background:var(--blue);border-color:var(--blue);color:#fff}
+
+    .prayer-content{
+      background:var(--navy-lt);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:2rem;
+      position:relative;
+    }
+    .prayer-day-num{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.68rem;
+      font-weight:700;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:#ef4444;
+      margin-bottom:.35rem;
+    }
+    .prayer-day-title{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:clamp(1.4rem,3vw,2rem);
+      font-weight:900;
+      letter-spacing:-.02em;
+      color:var(--parchment);
+      margin-bottom:.35rem;
+    }
+    .prayer-scripture{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.9rem;
+      font-style:italic;
+      color:var(--gold-lt);
+      margin-bottom:1.4rem;
+      padding-bottom:1.4rem;
+      border-bottom:1px solid var(--border);
+      line-height:1.65;
+    }
+    .prayer-points h4{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.65rem;
+      font-weight:700;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:.75rem;
+    }
+    .prayer-points ul{list-style:none;display:flex;flex-direction:column;gap:.6rem}
+    .prayer-points ul li{
+      display:flex;gap:.65rem;align-items:flex-start;
+      font-size:.9rem;
+      color:var(--muted-l);
+      line-height:1.6;
+    }
+    .prayer-points ul li::before{
+      content:'→';
+      color:var(--blue);
+      font-size:.78rem;
+      margin-top:.3rem;
+      flex-shrink:0;
+    }
+
+    /* ── ABOUT ─────────────────────────────────────────────────────── */
+    .about-hero{
+      background:none;
+      padding:2.5rem 2rem 2rem;
+      text-align:center;
+      border-bottom:1px solid var(--border);
+    }
+    .about-seal{
+      width:70px;height:70px;
+      margin:0 auto 1rem;
+      border-radius:50%;
+      border:2px solid var(--border-b);
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.8rem;
+      background:rgba(255,255,255,.04);
+      box-shadow:none;
+      animation:none;
+    }
+    .about-hero h1{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:clamp(1.8rem,4vw,3rem);
+      font-weight:900;
+      letter-spacing:-.03em;
+      color:var(--parchment);
+      line-height:1.1;
+      margin-bottom:.6rem;
+    }
+    .about-hero h1 em{font-style:italic;color:var(--blue)}
+    .about-hero p{
+      font-size:.92rem;
+      color:var(--muted-l);
+      max-width:520px;
+      margin:0 auto;
+      line-height:1.7;
+    }
+    .about-content{padding:2.5rem 2rem}
+    .about-grid{
+      display:grid;
+      grid-template-columns:1fr 300px;
+      gap:2rem;
+      align-items:start;
+      max-width:1100px;
+      margin:0 auto;
+    }
+    .about-text h2{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:1.22rem;
+      font-weight:800;
+      letter-spacing:-.02em;
+      color:var(--parchment);
+      margin-bottom:.6rem;
+      margin-top:1.8rem;
+      line-height:1.2;
+    }
+    .about-text h2:first-child{margin-top:0}
+    .about-text h2 span{color:var(--blue)}
+    .about-text p{
+      font-size:.87rem;
+      line-height:1.8;
+      color:var(--muted-l);
+      margin-bottom:.7rem;
+    }
+    .anniversary-box{
+      background:var(--navy-lt);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:1.5rem;
+      text-align:center;
+      position:sticky;
+      top:68px;
+    }
+    .anniversary-num{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:3.5rem;
+      font-weight:900;
+      letter-spacing:-.04em;
+      color:var(--parchment);
+      line-height:1;
+      text-shadow:none;
+    }
+    .anniversary-label{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.62rem;
+      font-weight:700;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-top:.35rem;
+    }
+    .anniversary-divider{
+      height:1px;
+      background:var(--border);
+      margin:.9rem 0;
+    }
+
+    /* ── CTA BANNER ────────────────────────────────────────────────── */
+    .cta-banner{
+      background:rgba(37,99,235,.12);
+      border-top:1px solid rgba(37,99,235,.2);
+      border-bottom:1px solid rgba(37,99,235,.2);
+      padding:2.5rem 2rem;
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .cta-banner::before{display:none}
+    .cta-banner h2{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:clamp(1.4rem,3vw,2.2rem);
+      font-weight:900;
+      letter-spacing:-.02em;
+      color:var(--parchment);
+      margin-bottom:.5rem;
+      position:relative;
+    }
+    .cta-banner p{
+      font-size:.9rem;
+      color:var(--muted-l);
+      max-width:520px;
+      margin:0 auto 1.5rem;
+      line-height:1.65;
+      position:relative;
+    }
+
+    /* ── QUOTE ─────────────────────────────────────────────────────── */
+    .quote-section{
+      padding:2rem 2rem;
+      background:var(--navy-lt);
+      border-top:1px solid var(--border);
+      border-bottom:1px solid var(--border);
+    }
+    .quote-carousel{
+      max-width:700px;
+      margin:0 auto;
+      text-align:center;
+    }
+    blockquote{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:clamp(1rem,2vw,1.22rem);
+      font-style:italic;
+      color:var(--muted-l);
+      line-height:1.65;
+      margin-bottom:.9rem;
+      position:relative;
+      padding:0 1.5rem;
+    }
+    blockquote::before{
+      content:'\201C';
+      position:absolute;
+      left:-.1rem;top:-.4rem;
+      font-size:3rem;
+      color:rgba(255,255,255,.08);
+      font-family:'Inter',system-ui,sans-serif;
+      line-height:1;
+    }
+    cite{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.68rem;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--gold-lt);
+      font-style:normal;
+    }
+
+    /* ── STRIPE ACCENT ─────────────────────────────────────────────── */
+    .stripe-accent{
+      height:1px;
+      background:var(--border);
+      opacity:1;
+    }
+
+    /* ── PROCLAMATION ──────────────────────────────────────────────── */
+    .proclamation{
+      max-width:700px;
+      margin:0 auto;
+      background:var(--navy-lt);
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:1.8rem;
+      position:relative;
+    }
+    .proclamation::before,.proclamation::after{
+      content:'· · ·';
+      display:block;
+      text-align:center;
+      font-size:.75rem;
+      letter-spacing:.5em;
+      color:rgba(255,255,255,.15);
+    }
+    .proclamation::before{margin-bottom:1.2rem}
+    .proclamation::after{margin-top:1.2rem}
+    .proclamation p{
+      font-size:.87rem;
+      line-height:1.82;
+      color:var(--muted-l);
+      text-align:justify;
+      margin-bottom:.75rem;
+    }
+
+    /* ── SHARE MODAL ───────────────────────────────────────────────── */
+    .share-overlay{
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:200;
+      background:rgba(0,0,0,.82);
+      backdrop-filter:blur(8px);
+      align-items:center;
+      justify-content:center;
+      padding:1.5rem;
+    }
+    .share-overlay.open{display:flex;animation:fadeIn .2s ease forwards}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+    .share-modal{
+      background:#161616;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:16px;
+      padding:1.8rem;
+      max-width:420px;
+      width:100%;
+      position:relative;
+      animation:slideUp .25s ease forwards;
+    }
+    @keyframes slideUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+    .share-close{
+      position:absolute;top:.9rem;right:.9rem;
+      background:rgba(255,255,255,.07);
+      border:none;
+      color:var(--muted);
+      font-size:1rem;
+      cursor:pointer;
+      width:26px;height:26px;
+      border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      transition:all .15s;line-height:1;
+    }
+    .share-close:hover{background:rgba(255,255,255,.14);color:var(--parchment)}
+
+    .share-modal h3{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:1.3rem;
+      font-weight:900;
+      letter-spacing:-.02em;
+      color:var(--parchment);
+      margin-bottom:.3rem;
+    }
+    .share-modal p{
+      font-size:.84rem;
+      color:var(--muted);
+      margin-bottom:1.2rem;
+      line-height:1.5;
+    }
+    .share-buttons{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:.55rem;
+      margin-bottom:1rem;
+    }
+    .share-btn{
+      display:flex;align-items:center;justify-content:center;
+      gap:.4rem;padding:.62rem .8rem;
+      border-radius:8px;
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.73rem;font-weight:700;
+      cursor:pointer;border:none;
+      transition:all .15s;text-decoration:none;
+      letter-spacing:.04em;text-transform:uppercase;
+    }
+    .share-btn:hover{transform:translateY(-1px);filter:brightness(1.1)}
+    .share-btn-sms    {background:#22c55e;color:#fff}
+    .share-btn-facebook{background:#1877F2;color:#fff}
+    .share-btn-twitter {background:#000;border:1px solid #333;color:#fff}
+    .share-btn-email   {background:#dc2626;color:#fff}
+    .share-btn-copy{
+      background:rgba(255,255,255,.06);
+      color:var(--parchment);
+      border:1px solid var(--border);
+      grid-column:1/-1;
+    }
+
+    .share-url-box{
+      display:flex;gap:.45rem;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--border);
+      border-radius:8px;
+      padding:.55rem .75rem;
+      align-items:center;
+    }
+    .share-url-box input{
+      flex:1;background:none;border:none;
+      color:var(--muted);font-size:.8rem;
+      outline:none;font-family:'Inter',system-ui,sans-serif;
+    }
+    .share-url-box button{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.68rem;font-weight:700;
+      color:var(--gold-lt);background:none;
+      border:1px solid rgba(217,119,6,.3);
+      border-radius:4px;padding:.22rem .55rem;
+      cursor:pointer;transition:all .15s;
+      white-space:nowrap;
+    }
+    .share-url-box button:hover{background:rgba(217,119,6,.1)}
+
+    /* ── TOAST ─────────────────────────────────────────────────────── */
+    .toast{
+      position:fixed;bottom:5rem;left:50%;
+      transform:translateX(-50%) translateY(10px);
+      background:#1a1a1a;border:1px solid var(--border);
+      border-radius:8px;padding:.55rem 1.1rem;
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.78rem;font-weight:600;
+      color:#22c55e;
+      z-index:300;opacity:0;transition:all .25s;pointer-events:none;
+      letter-spacing:.04em;text-transform:uppercase;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    /* ── FAB ────────────────────────────────────────────────────────── */
+    .fab-share{
+      position:fixed;bottom:5.5rem;right:2rem;z-index:98;
+      background:var(--gold);color:#000;
+      border:none;border-radius:50px;
+      padding:.6rem 1.1rem;
+      display:flex;align-items:center;gap:.45rem;
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.7rem;font-weight:800;
+      letter-spacing:.08em;text-transform:uppercase;
+      cursor:pointer;
+      box-shadow:0 4px 20px rgba(217,119,6,.35);
+      transition:all .2s;
+    }
+    .fab-share:hover{background:var(--gold-lt);transform:translateY(-2px)}
+
+    /* ── SPONSOR FOOTER ────────────────────────────────────────────── */
+    .sponsor-footer{
+      background:#ffffff;
+      border-top:3px solid #00C853;
+      padding:1.1rem 2rem;
+      width:100%;
+      position:relative;
+      z-index:1;
+    }
+    .sponsor-footer-inner{
+      max-width:1100px;margin:0 auto;
+      display:flex;align-items:center;
+      justify-content:space-between;
+      gap:1rem;flex-wrap:wrap;
+    }
+    .sponsor-footer-left{display:flex;flex-direction:column;gap:.25rem}
+    .sponsor-footer-label{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.58rem;font-weight:700;
+      letter-spacing:.28em;text-transform:uppercase;color:#00C853;
+    }
+    .sponsor-footer-motto{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.88rem;font-style:italic;color:#3a3a3a;
+    }
+    .sponsor-footer-logo a{display:block;transition:opacity .2s,transform .2s}
+    .sponsor-footer-logo a:hover{opacity:.75;transform:scale(1.03)}
+    .sponsor-logo{height:38px;width:auto;display:block}
+
+    /* ── SUBSCRIBE BANNER (bottom of page) ─────────────────────────── */
+    /* This class is used in the new redesigned HTML — keep it here for
+       forward-compatibility even if the original HTML doesn't have it */
+    .subscribe-banner{
+      position:sticky;bottom:0;z-index:95;
+      background:#0e0e0e;
+      border-top:1px solid var(--border);
+      padding:.9rem 2rem;
+      display:flex;align-items:center;
+      justify-content:space-between;gap:1rem;
+      margin-left:var(--sw);
+    }
+    .subscribe-banner-text{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.8rem;font-weight:600;
+      color:var(--parchment);
+    }
+    .btn-subscribe{
+      background:var(--gold);color:#000;
+      border:none;padding:.5rem 1.1rem;border-radius:5px;
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.72rem;font-weight:800;
+      letter-spacing:.06em;cursor:pointer;
+      transition:all .15s;white-space:nowrap;text-transform:uppercase;
+    }
+    .btn-subscribe:hover{background:var(--gold-lt)}
+
+    /* ── I PRAYED BUTTON ───────────────────────────────────────────── */
+    .prayed-section{
+      margin-top:1.5rem;
+      padding-top:1.5rem;
+      border-top:1px solid var(--border);
+      display:flex;flex-direction:column;
+      align-items:center;gap:.7rem;text-align:center;
+    }
+    .prayed-label{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.68rem;font-weight:600;
+      letter-spacing:.12em;text-transform:uppercase;
+      color:var(--muted);
+    }
+    .prayed-btn{
+      display:inline-flex;align-items:center;gap:.5rem;
+      padding:.65rem 1.8rem;
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.8rem;font-weight:700;
+      letter-spacing:.05em;text-transform:uppercase;
+      border:none;border-radius:6px;cursor:pointer;
+      transition:all .2s;
+      background:var(--blue);color:#fff;
+      box-shadow:none;
+    }
+    .prayed-btn:hover:not(:disabled){background:#3b82f6;transform:translateY(-1px)}
+    .prayed-btn:disabled{
+      background:#1a1a1a;color:var(--muted);
+      box-shadow:none;cursor:not-allowed;transform:none;
+    }
+    .prayed-btn.prayed-done{background:#052e16;color:#22c55e}
+    .prayed-count-wrap{
+      display:flex;flex-direction:column;align-items:center;gap:.15rem;
+    }
+    .prayed-count{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:2rem;font-weight:900;
+      letter-spacing:-.04em;
+      color:var(--parchment);
+      line-height:1;min-width:3ch;text-align:center;
+      text-shadow:none;
+    }
+    .prayed-count-label{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.62rem;font-weight:500;
+      letter-spacing:.1em;text-transform:uppercase;
+      color:var(--muted);
+    }
+    .prayed-already{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.83rem;font-weight:500;
+      color:#22c55e;font-style:normal;
+    }
+    .prayed-btn .prayed-icon{font-size:1rem}
+    @keyframes prayedPop{
+      0%  {transform:scale(1)}
+      40% {transform:scale(1.12)}
+      100%{transform:scale(1)}
+    }
+    .prayed-pop{animation:prayedPop .35s ease forwards}
+
+    /* ── LOGIN MODAL ───────────────────────────────────────────────── */
+    .login-overlay{
+      position:fixed;inset:0;z-index:1000;
+      display:flex;align-items:center;justify-content:center;padding:1.5rem;
+      backdrop-filter:blur(8px);
+      background:rgba(0,0,0,.72);
+      animation:loginFadeIn .3s ease forwards;
+    }
+    .login-overlay.hidden{display:none}
+    @keyframes loginFadeIn{from{opacity:0}to{opacity:1}}
+
+    .login-modal{
+      background:#111;
+      border:1px solid rgba(255,255,255,.13);
+      border-radius:16px;
+      padding:2.2rem;
+      width:100%;max-width:395px;
+      box-shadow:0 25px 60px rgba(0,0,0,.7);
+      animation:loginSlideUp .3s ease forwards;
+      position:relative;overflow:hidden;
+    }
+    .login-modal::before{
+      content:'';
+      position:absolute;top:0;left:0;right:0;height:3px;
+      background:linear-gradient(90deg,var(--blue),var(--gold));
+    }
+    @keyframes loginSlideUp{
+      from{opacity:0;transform:translateY(22px) scale(.97)}
+      to  {opacity:1;transform:translateY(0)    scale(1)}
+    }
+    .login-eyebrow{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.62rem;font-weight:700;
+      letter-spacing:.22em;text-transform:uppercase;
+      color:#ef4444;text-align:center;margin-bottom:.4rem;
+    }
+    .login-title{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:1.55rem;font-weight:900;
+      letter-spacing:-.03em;
+      color:var(--parchment);
+      text-align:center;line-height:1.12;margin-bottom:.4rem;
+    }
+    .login-title em{font-style:italic;color:var(--blue)}
+    .login-subtitle{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.82rem;color:var(--muted);
+      text-align:center;line-height:1.55;margin-bottom:1.3rem;
+    }
+    .login-row{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
+    .login-field{
+      display:flex;flex-direction:column;
+      gap:.28rem;margin-bottom:.65rem;
+    }
+    .login-field label{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.68rem;font-weight:600;
+      color:var(--muted-l);letter-spacing:.04em;
+      text-transform:none;
+    }
+    .login-field input{
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:6px;
+      padding:.62rem .82rem;
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.88rem;color:var(--parchment);
+      outline:none;
+      transition:border-color .15s,background .15s;
+      width:100%;
+    }
+    .login-field input::placeholder{color:rgba(255,255,255,.22)}
+    .login-field input:focus{
+      border-color:#3b82f6;
+      background:rgba(255,255,255,.08);
+    }
+    .login-field input.error{border-color:#ef4444}
+    .login-error-msg{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.76rem;color:#ef4444;
+      text-align:center;
+      margin-top:-.3rem;margin-bottom:.35rem;min-height:1rem;
+    }
+    .login-submit{
+      width:100%;padding:.78rem;
+      background:var(--blue);color:#fff;
+      border:none;border-radius:6px;
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.86rem;font-weight:700;
+      cursor:pointer;transition:all .15s;letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .login-submit:hover{background:#3b82f6}
+    .login-submit:disabled{opacity:.5;cursor:not-allowed}
+    .login-legal{
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.68rem;color:rgba(255,255,255,.22);
+      text-align:center;line-height:1.5;margin-top:.75rem;
+    }
+    .login-legal a{color:rgba(255,255,255,.32)}
+
+    /* ── LOGIN SELECTS ─────────────────────────────────────────────── */
+    .login-field select{
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:6px;
+      padding:.62rem 2.2rem .62rem .82rem;
+      font-family:'Inter',system-ui,sans-serif;
+      font-size:.88rem;color:var(--parchment);
+      outline:none;
+      transition:border-color .15s,background .15s;
+      width:100%;
+      appearance:none;-webkit-appearance:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;
+      background-position:right .82rem center;
+      cursor:pointer;
+    }
+    .login-field select:focus{
+      border-color:#3b82f6;
+      background-color:rgba(255,255,255,.08);
+    }
+    .login-field select.error{border-color:#ef4444}
+    .login-field select option{background:#111;color:var(--parchment)}
+    .login-field select option:disabled{color:rgba(255,255,255,.3)}
+
+    /* ── GREETING BAR ──────────────────────────────────────────────── */
+    /* (already styled above as top bar — this handles the .visible toggle) */
+
+    /* ── RESPONSIVE ────────────────────────────────────────────────── */
+    @media(max-width:900px){
+      .about-grid{grid-template-columns:1fr}
+      .anniversary-box{position:static}
+    }
+    @media(max-width:768px){
+      nav{
+        position:relative;
+        width:100%;
+        flex-direction:row;
+        height:56px;
+        border-right:none;
+        border-bottom:1px solid var(--border);
+        overflow:visible;
+      }
+      .nav-inner{flex-direction:row;align-items:center;height:100%;padding:0 1rem}
+      .nav-brand{padding:.6rem 0}
+      .nav-links{display:none}   /* hidden; mobile menu used instead */
+      .hamburger{display:flex}
+      #app{margin-left:0}
+      .prayer-grid{grid-template-columns:1fr}
+      .counter-sep{display:none}
+      .share-buttons{grid-template-columns:1fr}
+      .fab-share{bottom:5rem;right:1.5rem}
+      .subscribe-banner{margin-left:0}
+      section{padding:2rem 1rem}
+      .hero{padding:1.5rem 1rem 0}
+      .prayer-content{padding:1.3rem}
+      .about-hero{padding:2rem 1rem}
+      .about-content{padding:2rem 1rem}
+    }
+    @media(max-width:480px){
+      .counter-grid{gap:.25rem}
+      .hero-title{font-size:2rem}
+    }
+  </style>
